@@ -1,0 +1,12 @@
+{
+  "gcode": "L Bracket Test 1_0.2mm_PLA_Elegoo Neptune 4 Max_21m4s.gcode",
+  "voxel_size": 1.0,
+  "material": "PLA",
+  "supports": [
+    {"box": {"z": [0, 0], "y": [200, 240]}, "axes": "xyz"}
+  ],
+  "loads": [
+    {"face": "zmax", "force": [0, 50, 0]}
+  ],
+  "output": "l_bracket_result.vtk"
+}

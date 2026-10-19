@@ -48,6 +48,13 @@ threedem run my_case.json          # run an analysis
 
 Open the resulting `.vtk` in [ParaView](https://www.paraview.org/) and threshold on `fill` to hide void.
 
+A real example is in [`tests/Geom`](tests/Geom): an L bracket sliced with OrcaSlicer 2.3.1 (3 walls, 10 % rectilinear
+infill), with its CAD/STL and a ready-to-run case that bolts down the far end of the base and pushes the top of the upright:
+
+```bash
+threedem run tests/Geom/l_bracket_case.json
+```
+
 ### Case file
 
 ```json
