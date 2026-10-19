@@ -32,11 +32,38 @@ G-code ─► toolpath segments ─► voxel grid ─► orthotropic hex8 FE mod
 ## Install
 
 ```bash
-git clone <this repo>
-cd threedem
-pip install -e ".[dev]"      # add ,fast for the pyamg preconditioner
+git clone https://github.com/Armaan747/3DEM.git
+cd 3DEM
+pip install -e ".[gui,dev]"      # drop "gui" for the command-line tools only; add "fast" for pyamg
 pytest
 ```
+
+## Desktop app
+
+```bash
+threedem gui                      # or: threedem gui my_part.gcode
+```
+
+Work through the four tabs on the left:
+
+1. **Model** - open the G-code. Toolpaths are drawn by feature type (or layer, with a layer slider). Tick the
+   feature types that carry load (skirt, brim, support and the purge line start unticked), pick a voxel
+   size, and build the analysis model.
+2. **Material** - choose a preset or type in your own orthotropic stiffness and strength values.
+3. **Supports & Loads** - click a face in the 3D view (Ctrl+click adds more), or use the model-face / box
+   selectors, then add it as a support (choose which axes to fix) or as a load (magnitude + direction: into
+   or out of the picked face, along an axis, or a custom vector). Blue = supports, red = loads.
+4. **Solve & Results** - solve in the background, then colour the model by displacement, von Mises stress,
+   any stress component, the in-plane and inter-layer failure indices or the safety factor. Deformation is
+   exaggerated automatically (adjustable); the **Section** control in the View box cuts the part open so you
+   can see the stresses inside the infill.
+
+Projects (G-code path, settings, material, supports and loads) save to a `.threedem` file. Results export
+to VTK for ParaView.
+
+![Toolpaths of the L bracket coloured by feature type](docs/img/toolpaths.png)
+![Selecting a load face and defining supports and loads](docs/img/supports-loads.png)
+![Displacement of the L bracket under a sideways load](docs/img/results.png)
 
 ## Try it
 
@@ -114,13 +141,15 @@ The test-suite checks the whole chain (G-code → voxels → solution) against c
 * The failure indices are simple (in-plane von Mises vs. the weaker in-plane strength; inter-layer tension +
   shear). Tsai-Wu/Hashin style criteria are on the roadmap.
 * Hex8 elements show shear locking in thin bending; incompatible-mode or higher-order elements are planned.
-* ASCII G-code only (no `.bgcode`), and no viewer yet - results go to VTK.
+* ASCII G-code only (no `.bgcode`).
+* The app supports fixed-displacement supports and force loads on faces; pressure, gravity, bolts/contact and
+  edge or vertex selection are not available yet.
 * Z-hop/travel, wipes and retractions are handled, but exotic firmware flavours and non-planar slicing are untested.
   Feedback with sample files is welcome.
 
 ## Roadmap
 
-1. Interactive viewer for choosing supports and loads by clicking (PyVista/Qt)
+1. More load types in the app (pressure, gravity, prescribed displacement, bolt holes) and edge/point selection
 2. Matrix-free multigrid solver for fine meshes, optional GPU
 3. Incompatible-mode hex8 to remove bending locking
 4. Calibrated material library and coupon-fitting helper

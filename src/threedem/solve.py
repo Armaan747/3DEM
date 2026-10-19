@@ -76,6 +76,27 @@ class Model:
         self._fixed: dict[int, float] = {}  # dof -> prescribed value
         self._force = np.zeros(3 * self.n_nodes)
 
+    # -- public views of the mesh (used by the GUI) ------------------------------------
+
+    @property
+    def elements_ijk(self) -> np.ndarray:
+        """``(n, 3)`` voxel indices of the elements."""
+        return self._ijk
+
+    @property
+    def node_grid_index(self) -> np.ndarray:
+        """``(n_nodes, 3)`` full-grid index of every node."""
+        return np.stack(np.unravel_index(self._node_flat, self.node_shape), axis=1)
+
+    def node_ids_from_grid(self, flat_grid_ids: np.ndarray) -> np.ndarray:
+        """Map flat full-grid node ids (that belong to the mesh) to compact node indices."""
+        return np.searchsorted(self._node_flat, flat_grid_ids)
+
+    def clear_bcs(self) -> None:
+        """Remove all supports and loads."""
+        self._fixed.clear()
+        self._force[:] = 0.0
+
     # -- selection -------------------------------------------------------------------
 
     def select_nodes(self, box=None, face: str | None = None, depth: float = 0.0) -> np.ndarray:

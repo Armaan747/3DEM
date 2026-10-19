@@ -26,7 +26,18 @@ def main(argv=None) -> int:
     pd = sub.add_parser("demo", help="write and solve a small cantilever example in a folder")
     pd.add_argument("folder", nargs="?", default="threedem_demo")
 
+    pg = sub.add_parser("gui", help="open the desktop app (needs: pip install threedem[gui])")
+    pg.add_argument("file", nargs="?", help="optional .gcode or .threedem project to open")
+
     args = p.parse_args(argv)
+    if args.cmd == "gui":
+        try:
+            from .gui.app import main as gui_main
+        except ImportError as exc:
+            print(f"The GUI needs extra packages ({exc}).\nInstall them with:  pip install \"threedem[gui]\"",
+                  file=sys.stderr)
+            return 1
+        return gui_main([args.file] if args.file else [])
     if args.cmd == "info":
         tp = parse_gcode(args.gcode, args.filament_diameter)
         print(tp.summary())

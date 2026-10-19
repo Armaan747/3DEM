@@ -60,6 +60,10 @@ class ToolPaths:
         keep = ~drop[self.type_id]
         return self._mask(keep)
 
+    def select_types(self, type_ids) -> "ToolPaths":
+        """Keep only segments whose feature type index is in ``type_ids``."""
+        return self._mask(np.isin(self.type_id, list(type_ids)))
+
     def _mask(self, keep: np.ndarray) -> "ToolPaths":
         return ToolPaths(
             self.p0[keep], self.p1[keep], self.volume[keep], self.width[keep],
